@@ -1,121 +1,206 @@
+# Anisoap-torch
 
-# UK-DALE Showcase (Quick Demo for Dr. Gupta)
+Full PyTorch rewrite of [AniSOAP](https://github.com/cersonsky-lab/AniSOAP)'s numerical pipeline with batched operations — achieving **3.8× speedup on benzenes** and **15.7× on ellipsoids** on CPU, with GPU readiness built in.
 
-This bundle helps you **show the UK-DALE dataset** quickly—either **entire dataset** (HDF5) or **one house for many days with all appliances**.
-
-## ✅ What you’ll show
-1. **Dataset overview:** houses, sampling rates, channels.
-2. **House-level summary:** list of appliances and meter channels.
-3. **Many days** of **mains** + **all available appliances** for a house (e.g., House 1) with clean plots.
-4. A few **appliance snippets** zoomed in.
+This builds on the earlier [einsum-only optimization work](https://github.com/Tejas7007/cersonskylab-anisoap-optimization) and goes significantly further by eliminating all per-pair Python loops, batching every operation, and converting the full pipeline to PyTorch.
 
 ---
 
-## 0) Recommended Environment
-- Python 3.10–3.12
-- Create a fresh environment:
-  ```bash
-  uv venv .venv && source .venv/bin/activate  # or python -m venv .venv
-  pip install -U pip wheel
-  pip install numpy pandas matplotlib tables h5py scipy pytz tzlocal
-  # NILMTK (one of the two install routes below)
-  pip install nilmtk  # often works
-  # If you hit issues, try:
-  # pip install git+https://github.com/nilmtk/nilmtk.git
-  ```
+## Why This Exists
 
-> If `tables` (PyTables) or `numexpr` gives trouble on Apple Silicon, install via conda-forge:
-> ```bash
-> conda create -n nilm python=3.11 -c conda-forge pytables numexpr numpy pandas matplotlib h5py scipy pytz tzlocal
-> pip install nilmtk
-> ```
+The original AniSOAP library computes anisotropic SOAP descriptors using NumPy. Our [previous benchmarking work](https://github.com/Tejas7007/cersonskylab-anisoap-optimization) identified `numpy.einsum` as 66–77% of runtime and swapped it to `torch.einsum`, yielding a **15–25% speedup**.
+
+This repo goes deeper. By profiling with `cProfile` at the function level, we discovered the **real bottleneck** was not einsum itself (only 11% of actual compute) — it was the **Python for-loop** iterating over 87,174 atom pairs, calling functions individually for each pair. The previous profiling attributed loop overhead to einsum because einsum was the most expensive call *inside* each iteration.
 
 ---
 
-## 1) Get the data
-The official page is:
-- https://data.ukedc.rl.ac.uk/browse/edc/efficiency/residential/EnergyConsumption/UK-DALE
+## Results: Previous vs Current Approach
 
-You have two options:
+### Previous Approach: einsum-only swap
+> *Swap `np.einsum` → `torch.einsum`, keep everything else NumPy*
 
-### Option A — Use the prebuilt HDF5 (fastest to demo)
-Download `ukdale.h5` (if your access allows) and place it here:
-```
-/path/to/data/ukdale/ukdale.h5
-```
-Then skip to **Step 3**.
+| System | NumPy Baseline | PyTorch einsum | Speedup |
+|---|---|---|---|
+| Benzenes (50 frames) | 203.18s | 172.81s | **15% faster** |
+| Ellipsoids (50 frames) | 1.56s | 1.17s | **25% faster** |
 
-### Option B — Use raw house folders and convert to HDF5
-1. Download the raw data (example for House 1 & 2):
-   ```bash
-   mkdir -p /path/to/data/ukdale/raw
-   cd /path/to/data/ukdale/raw
+*CHTC Linux Cluster, x86_64, 1 CPU/job*
 
-   # Example sources (adjust as needed if mirrors change):
-   # House 1
-   wget -r -np -nH --cut-dirs=7 -R "index.html*"      https://data.ukedc.rl.ac.uk/browse/edc/efficiency/residential/EnergyConsumption/UK-DALE/UK-DALE-2017/low_freq/house_1/
+### Current Approach: Full PyTorch rewrite + batching
+> *Eliminate Python loops, batch all operations, convert full pipeline to PyTorch*
 
-   # House 2
-   wget -r -np -nH --cut-dirs=7 -R "index.html*"      https://data.ukedc.rl.ac.uk/browse/edc/efficiency/residential/EnergyConsumption/UK-DALE/UK-DALE-2017/low_freq/house_2/
-   ```
+| System | NumPy Baseline | Full PyTorch Rewrite | Speedup |
+|---|---|---|---|
+| Benzenes (50 frames) | 10.43s | 2.75s | **3.8× (280% faster)** |
+| Ellipsoids (50 frames) | 0.408s | 0.026s | **15.7×** |
 
-2. Convert to `ukdale.h5` using NILMTK's converter:
-   ```bash
-   python - << 'PY'
-from nilmtk.dataset_converters import convert_ukdale
-convert_ukdale(
-    input_path="/path/to/data/ukdale/raw",
-    output_filename="/path/to/data/ukdale/ukdale.h5"
-)
-print("Converted → /path/to/data/ukdale/ukdale.h5")
-PY
-   ```
+*Apple M2, macOS, single-threaded*
+
+> **Note:** Wall times differ between platforms (CHTC cluster vs Mac M2), so absolute times aren't directly comparable. The key metric is the **relative speedup**, which shows the full rewrite delivers an order-of-magnitude greater improvement than the einsum-only swap.
+
+### Why 3.8× vs 15%?
+
+The einsum-only approach left the massive per-pair Python loop untouched. That loop was responsible for 85% of runtime:
+
+| What we eliminated | Before | After | Improvement |
+|---|---|---|---|
+| Python loop overhead | 8.83s (85%) | 0.005s | **1,766×** |
+| Per-pair gaussian params (87k calls) | 1.90s | 0.015s (1 call) | **127×** |
+| Per-pair linalg.solve (174k calls) | 1.10s | 0.01s (8 calls) | **110×** |
+| Per-pair einsum (610k calls) | 1.13s | 0.18s (64 calls) | **6.3×** |
+| Per-pair Rust FFI (87k calls) | 3.02s | 2.11s (4 calls) | **1.4×** |
+| Per-sample contraction | 0.32s | 0.18s | **1.8×** |
 
 ---
 
-## 2) Run the demo notebook
-Open:
-```
-ukdale_showcase.ipynb
-```
-Then run all cells. It will:
-- Load `/path/to/data/ukdale/ukdale.h5`
-- Print dataset/house metadata
-- List **all appliances** in the chosen house
-- Plot **many days** of mains + all available appliances (resampled for clarity)
-- Provide **zoomed** windows
+## Optimization Progression
 
-**Tip:** To switch houses or date ranges, edit the `HOUSE_ID`, `START`, and `END` variables near the top.
+| Stage | Benzenes Time | Cumulative Speedup |
+|---|---|---|
+| Original NumPy baseline | 10.43s | 1.0× |
+| + Batched gaussian parameters | 8.53s | 1.2× |
+| + Eliminated Python per-pair loop | 4.40s | 2.4× |
+| + Batched Rust FFI (87k → 4 calls) | 3.44s | 3.0× |
+| + Vectorized contract_pairwise_feat | 3.40s | 3.1× |
+| + Full PyTorch conversion | **2.75s** | **3.8×** |
 
 ---
 
-## 3) (Optional) CLI: show one house quickly
-If you prefer a terminal-only run (fast tables + PNGs), use:
+## Current Bottleneck
+
+```
+compute_moments_batch (Rust):  2.11s  (71% of total)
+torch.einsum:                  0.18s  ( 6%)
+contract_pairwise_feat:        0.18s  ( 6%)
+metatensor overhead:           0.27s  ( 9%)
+everything else:               0.23s  ( 8%)
+```
+
+The Rust `compute_moments` is now the hard floor — pure recurrence-relation math for trivariate Gaussian moments. Each pair costs ~24μs and Rayon parallelism showed no benefit at this granularity.
+
+---
+
+## What Was Changed
+
+### 1. Batched Operations (Algorithmic)
+
+**Before:** 87,174 individual Python function calls per neighbor pair
+**After:** 4 batched calls (one per species-pair block)
+
+```python
+# BEFORE: per-pair loop (87k iterations)
+for isample in nl_block.samples:
+    r_ij = nl_block.values[isample]
+    precision, center, constant = compute_gaussian_parameters(r_ij, lengths, rot)
+    moments = compute_moments(precision, center, maxdeg)
+    for l in range(lmax+1):
+        np.einsum("mnpqr, pqr->mn", sph_to_cart[l], moments)
+
+# AFTER: batched operations (4 calls total)
+all_r_ij = nl_block.values[:, :, 0]                          # (N, 3)
+all_precision, all_center, all_constant = batch_gaussian(...)  # 1 call
+all_moments = compute_moments_batch(...)                       # 1 Rust FFI call
+for l in range(lmax+1):
+    torch.einsum("mnpqr, bpqr->bmn", sph_to_cart[l], all_moments_l)
+```
+
+### 2. Rust FFI Optimization
+
+Added `compute_moments_batch_rust()` to process all pairs in a single Python→Rust crossing with GIL release:
+
+```rust
+pub fn compute_moments_batch_rust(
+    dil_mats: &[f64],   // flattened (N, 3, 3)
+    gau_cens: &[f64],   // flattened (N, 3)
+    max_deg: i32,
+    n_pairs: usize,
+) -> PyResult<Vec<f64>>
+```
+
+### 3. Full PyTorch Backend
+
+| Operation | NumPy | PyTorch |
+|---|---|---|
+| Linear solve | `np.linalg.solve` | `torch.linalg.solve` |
+| Eigendecomposition | `np.linalg.eigh` | `torch.linalg.eigh` |
+| Tensor contraction | `np.einsum` | `torch.einsum` |
+| Scatter-add | `np.add.at` | `torch.scatter_add_` |
+| Matrix sqrt inverse | SciPy-based | `torch.linalg.eigh` |
+
+### 4. GPU Readiness
+
+```python
+# CPU (default)
+edp = EllipsoidalDensityProjection(**hypers)
+
+# GPU (future — when metatensor supports torch tensors)
+edp = EllipsoidalDensityProjection(**hypers, device="cuda")
+```
+
+The `device` parameter propagates through all computation. Current limitation: metatensor `TensorBlock.values` are NumPy arrays, requiring CPU↔GPU transfers.
+
+---
+
+## Validation
+
+All outputs verified identical to original:
+
+- No NaNs, no Infs across all blocks
+- Batched gaussian parameters match per-pair originals (100 random pairs, machine precision)
+- Batched Rust moments match per-pair originals (50 random pairs, max diff = 0.00e+00)
+- Final descriptor values match original pipeline exactly
+
+---
+
+## Files Modified (from [cersonsky-lab/AniSOAP](https://github.com/cersonsky-lab/AniSOAP))
+
+| File | Changes |
+|---|---|
+| `anisoap/representations/radial_basis.py` | Full PyTorch rewrite; `torch.linalg.solve/eigh/einsum`, `compute_gaussian_parameters_batch()`, `device` param |
+| `anisoap/representations/ellipsoidal_density_projection.py` | Full PyTorch rewrite; batched pairwise expansion, `torch.einsum`, `scatter_add_`, `device` param |
+| `rust/ellip_expansion/compute_moments.rs` | Added `compute_moments_batch_rust()` with Rayon parallelism |
+| `rust/lib.rs` | Exposed batched Rust function with GIL release via `py.allow_threads()` |
+| `Cargo.toml` | Added `rayon = "1.10"` dependency |
+
+---
+
+## Profiling
+
+### Hyperparameters
+```
+max_angular=6, radial_basis_name="gto", cutoff_radius=7.0, radial_gaussian_width=1.5
+```
+
+### Test Data
+- `benzenes.xyz`: 50 frames, 2 species (H, C), high neighbor density → 87,174 pairs
+- `ellipsoids.xyz`: 50 frames, 1 species, simple ellipsoidal particles
+
+### Profiling Commands
 ```bash
-python show_ukdale.py   --h5 /path/to/data/ukdale/ukdale.h5   --house 1   --start "2013-04-30"   --end "2013-05-10"   --out out_house1
+# Benchmark
+python profile_baseline.py
+
+# Validation
+python validate_final.py
 ```
 
-This will generate:
-- `out_house1/house_summary.txt` (appliances, channels)
-- `out_house1/mains_1min.png`
-- `out_house1/appliances_1min.png`
-- `out_house1/zoom_windows/` (short snippets)
+---
+
+## Future Work
+
+1. **Port `compute_moments` to PyTorch** — Eliminate the 2.1s Rust bottleneck by implementing the recurrence relations as a PyTorch kernel (enables GPU execution)
+2. **metatensor-torch integration** — Use `metatensor.torch.TensorBlock` to avoid numpy↔torch conversion overhead
+3. **`torch.compile()`** — JIT compilation of the einsum + scaling pipeline
+4. **Larger benchmarks** — Profile on realistic MD trajectories (1000+ frames)
 
 ---
 
-## 4) What to say to Dr. Gupta (script)
-- "Here is UK-DALE with N houses and appliance-level channels at approximately 6-second sampling (low frequency)."
-- "This is House H. We have these appliances: (the notebook prints the list)."
-- "I’ve pulled many days of data for all available appliances plus mains, resampled to 1 minute for readability."
-- "Here are zoomed-in windows to show appliance signatures."
+## Related Repositories
 
-If you want the full dataset, repeat the same notebook with `houses = [1,2,3,4,5]` and loop (the cells include a template).
+- [cersonsky-lab/AniSOAP](https://github.com/cersonsky-lab/AniSOAP) — Original library
+- [Tejas7007/AniSOAP](https://github.com/Tejas7007/AniSOAP) — Fork with modifications
+- [Tejas7007/cersonskylab-anisoap-optimization](https://github.com/Tejas7007/cersonskylab-anisoap-optimization) — Previous einsum-only benchmarking
 
----
+## License
 
-## 5) Troubleshooting
-- If NILMTK can't find meters, check that you're loading the correct HDF5 and that conversion succeeded.
-- If plots look empty, try a different date range (use the printed `available_timeframe`).
-
-Good luck!
-— Generated 2025-11-07
+MIT
