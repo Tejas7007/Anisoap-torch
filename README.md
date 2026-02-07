@@ -34,7 +34,7 @@ This repo goes deeper. By profiling with `cProfile` at the function level, we di
 | Benzenes (50 frames) | 10.43s | 2.75s | **3.8× (280% faster)** |
 | Ellipsoids (50 frames) | 0.408s | 0.026s | **15.7×** |
 
-*Apple M2, macOS, single-threaded*
+*Apple M4, macOS, single-threaded*
 
 > **Note:** Wall times differ between platforms (CHTC cluster vs Mac M2), so absolute times aren't directly comparable. The key metric is the **relative speedup**, which shows the full rewrite delivers an order-of-magnitude greater improvement than the einsum-only swap.
 
