@@ -1,0 +1,18 @@
+# Derived from cersonsky-lab/AniSOAP under Apache-2.0.
+# Modified to add batched moment evaluation and Rayon support.
+
+[package]
+name = "anisoap_rust"
+version = "0.0.0"
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+pyo3 = "0.21.0"
+numpy = "0.21.0"
+rayon = "1.10"
+
+[lib]
+name = "anisoap_rust_lib"
+path = "rust/lib.rs"
+crate-type = ["cdylib"]

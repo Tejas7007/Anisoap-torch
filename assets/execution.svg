@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="390" viewBox="0 0 1200 390" role="img" aria-labelledby="title desc">
+  <title id="title">From pairwise execution to batched execution</title>
+  <desc id="desc">Sequential pair calls are reorganized into species-pair tensor batches with fewer Rust crossings.</desc>
+  <style>
+    .sans{font-family:Inter,Segoe UI,Arial,sans-serif}
+    .heading{font-size:26px;font-weight:720}
+    .eyebrow{font-size:12px;font-weight:700;letter-spacing:1.5px}
+    .label{font-size:15px;font-weight:650}
+    .small{font-size:12px;font-weight:500}
+    @media (prefers-reduced-motion: reduce){animate,animateMotion{display:none}}
+  </style>
+  <rect width="1200" height="390" rx="24" fill="#0b1016"/>
+  <rect x="1" y="1" width="1198" height="388" rx="23" fill="none" stroke="#25313d"/>
+  <text x="50" y="54" fill="#f8fafc" class="sans heading">Execution model</text>
+  <text x="50" y="80" fill="#8ea0b2" class="sans small">The speedup comes from changing the unit of work.</text>
+
+  <g transform="translate(50 112)">
+    <rect width="500" height="226" rx="20" fill="#0f161e" stroke="#2b3947"/>
+    <text x="22" y="30" fill="#9fb0bf" class="sans eyebrow">BEFORE · PAIRWISE CONTROL FLOW</text>
+    <text x="22" y="58" fill="#f8fafc" class="sans label">Many tiny Python and FFI steps</text>
+    <g transform="translate(24 88)">
+      <g fill="#1f2a35" stroke="#394958">
+        <rect x="0" y="0" width="54" height="34" rx="8"/><rect x="66" y="0" width="54" height="34" rx="8"/><rect x="132" y="0" width="54" height="34" rx="8"/><rect x="198" y="0" width="54" height="34" rx="8"/><rect x="264" y="0" width="54" height="34" rx="8"/><rect x="330" y="0" width="54" height="34" rx="8"/><rect x="396" y="0" width="54" height="34" rx="8"/>
+        <rect x="0" y="48" width="54" height="34" rx="8"/><rect x="66" y="48" width="54" height="34" rx="8"/><rect x="132" y="48" width="54" height="34" rx="8"/><rect x="198" y="48" width="54" height="34" rx="8"/><rect x="264" y="48" width="54" height="34" rx="8"/><rect x="330" y="48" width="54" height="34" rx="8"/><rect x="396" y="48" width="54" height="34" rx="8"/>
+      </g>
+      <g fill="#fb7185">
+        <rect x="0" y="0" width="54" height="34" rx="8"><animate attributeName="opacity" values=".2;1;.2" dur="3.2s" repeatCount="indefinite"/></rect>
+        <rect x="66" y="0" width="54" height="34" rx="8"><animate attributeName="opacity" values=".2;1;.2" dur="3.2s" begin=".22s" repeatCount="indefinite"/></rect>
+        <rect x="132" y="0" width="54" height="34" rx="8"><animate attributeName="opacity" values=".2;1;.2" dur="3.2s" begin=".44s" repeatCount="indefinite"/></rect>
+        <rect x="198" y="0" width="54" height="34" rx="8"><animate attributeName="opacity" values=".2;1;.2" dur="3.2s" begin=".66s" repeatCount="indefinite"/></rect>
+        <rect x="264" y="0" width="54" height="34" rx="8"><animate attributeName="opacity" values=".2;1;.2" dur="3.2s" begin=".88s" repeatCount="indefinite"/></rect>
+        <rect x="330" y="0" width="54" height="34" rx="8"><animate attributeName="opacity" values=".2;1;.2" dur="3.2s" begin="1.10s" repeatCount="indefinite"/></rect>
+        <rect x="396" y="0" width="54" height="34" rx="8"><animate attributeName="opacity" values=".2;1;.2" dur="3.2s" begin="1.32s" repeatCount="indefinite"/></rect>
+      </g>
+      <text x="0" y="116" fill="#8293a3" class="sans small">pair loop · small solve · Rust call · repeat</text>
+    </g>
+  </g>
+
+  <path d="M566 225H628" stroke="#425466" stroke-width="2" stroke-dasharray="5 7">
+    <animate attributeName="stroke-dashoffset" values="0;-24" dur="1.8s" repeatCount="indefinite"/>
+  </path>
+
+  <g transform="translate(650 112)">
+    <rect width="500" height="226" rx="20" fill="#0f161e" stroke="#2b3947"/>
+    <text x="22" y="30" fill="#9fb0bf" class="sans eyebrow">AFTER · SPECIES-PAIR BATCHES</text>
+    <text x="22" y="58" fill="#f8fafc" class="sans label">Fewer, larger units of work</text>
+    <g transform="translate(24 88)">
+      <g>
+        <rect x="0" y="0" width="126" height="82" rx="12" fill="#132330" stroke="#3b5368"/>
+        <rect x="138" y="0" width="126" height="82" rx="12" fill="#211d2b" stroke="#67485b"/>
+        <rect x="276" y="0" width="126" height="82" rx="12" fill="#282315" stroke="#675b35"/>
+        <rect x="414" y="0" width="38" height="82" rx="12" fill="#1b2330" stroke="#4b5563"/>
+      </g>
+      <g class="sans small" text-anchor="middle">
+        <text x="63" y="32" fill="#7dd3fc">batch A</text><text x="63" y="55" fill="#cbd5e1">PyTorch</text>
+        <text x="201" y="32" fill="#fda4af">batch B</text><text x="201" y="55" fill="#cbd5e1">PyTorch</text>
+        <text x="339" y="32" fill="#fde68a">Rust</text><text x="339" y="55" fill="#cbd5e1">moments</text>
+      </g>
+      <g fill="#38bdf8">
+        <circle cx="63" cy="70" r="4"><animate attributeName="r" values="3;6;3" dur="2.4s" repeatCount="indefinite"/></circle>
+        <circle cx="201" cy="70" r="4"><animate attributeName="r" values="3;6;3" dur="2.4s" begin=".8s" repeatCount="indefinite"/></circle>
+        <circle cx="339" cy="70" r="4"><animate attributeName="r" values="3;6;3" dur="2.4s" begin="1.6s" repeatCount="indefinite"/></circle>
+      </g>
+      <text x="0" y="116" fill="#8293a3" class="sans small">batch solve · batched FFI · grouped aggregation</text>
+    </g>
+  </g>
+
+  <g transform="translate(50 360)" class="sans small">
+    <text x="0" y="0" fill="#718096">Recorded benzene workload: 87,174 pair samples compressed into species-pair blocks.</text>
+    <text x="865" y="0" fill="#9fb0bf">See benchmark methodology for timing details.</text>
+  </g>
+</svg>

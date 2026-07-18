@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+title: AniSOAP-Torch
+message: >-
+  If you use this optimization artifact, cite both this repository and the
+  upstream AniSOAP software.
+type: software
+authors:
+  - given-names: Tejas
+    family-names: Dahiya
+repository-code: https://github.com/Tejas7007/AniSOAP-Torch
+license: Apache-2.0
+abstract: >-
+  A focused optimization artifact for AniSOAP that batches pairwise descriptor
+  computation, moves dense numerical operations to PyTorch, and reduces
+  Python-to-Rust FFI crossings through batched moment evaluation.
+keywords:
+  - anisotropic descriptors
+  - SOAP
+  - PyTorch
+  - Rust
+  - scientific computing
+  - performance optimization
+references:
+  - type: software
+    title: AniSOAP
+    repository-code: https://github.com/cersonsky-lab/AniSOAP
+    license: Apache-2.0
+    authors:
+      - given-names: Arthur
+        family-names: Lin
+      - given-names: Lucas
+        family-names: Ortengren
+      - given-names: Seonwoo
+        family-names: Hwang
+      - given-names: Yong-Cheol
+        family-names: Cho
+      - given-names: Jigyasa
+        family-names: Nigam
+      - given-names: Rose
+        family-names: Cersonsky

@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">AniSOAP-Torch animated descriptor pipeline</title>
+  <desc id="desc">An anisotropic neighborhood is packed into tensor batches, evaluated with Rust, and assembled into descriptor fingerprints.</desc>
+  <style>
+    .sans{font-family:Inter,Segoe UI,Arial,sans-serif}
+    .title{font-size:44px;font-weight:760}
+    .subtitle{font-size:17px;font-weight:420}
+    .eyebrow{font-size:12px;font-weight:700;letter-spacing:1.6px}
+    .small{font-size:12px;font-weight:500}
+    @media (prefers-reduced-motion: reduce){animate,animateMotion,animateTransform{display:none}}
+  </style>
+  <rect width="1200" height="520" rx="28" fill="#0b1016"/>
+  <rect x="1" y="1" width="1198" height="518" rx="27" fill="none" stroke="#25313d"/>
+  <g stroke="#18212b" stroke-width="1">
+    <path d="M0 130H1200M0 260H1200M0 390H1200"/>
+    <path d="M150 0V520M300 0V520M450 0V520M600 0V520M750 0V520M900 0V520M1050 0V520"/>
+  </g>
+
+  <text x="58" y="66" fill="#f8fafc" class="sans title">AniSOAP-Torch</text>
+  <text x="58" y="98" fill="#9fb0bf" class="sans subtitle">Batch the full anisotropic descriptor path, not one isolated operator.</text>
+
+  <g transform="translate(40 132)">
+    <rect width="340" height="318" rx="22" fill="#0f161e" stroke="#2b3947"/>
+    <text x="24" y="32" fill="#9fb0bf" class="sans eyebrow">01 · ANISOTROPIC NEIGHBORHOOD</text>
+    <g transform="translate(170 164)">
+      <circle r="86" fill="none" stroke="#263442" stroke-dasharray="4 8"/>
+      <circle r="34" fill="#101a23" stroke="#38bdf8" stroke-width="2"/>
+      <circle r="7" fill="#f8fafc"/>
+      <g>
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="16s" repeatCount="indefinite"/>
+        <ellipse cx="0" cy="-83" rx="42" ry="16" fill="#38bdf8" transform="rotate(-18 0 -83)"/>
+        <ellipse cx="79" cy="-25" rx="38" ry="15" fill="#fbbf24" transform="rotate(26 79 -25)"/>
+        <ellipse cx="52" cy="70" rx="44" ry="16" fill="#fb7185" transform="rotate(-8 52 70)"/>
+        <ellipse cx="-62" cy="58" rx="37" ry="15" fill="#a78bfa" transform="rotate(20 -62 58)"/>
+        <ellipse cx="-78" cy="-26" rx="40" ry="15" fill="#cbd5e1" transform="rotate(-30 -78 -26)"/>
+      </g>
+      <g stroke="#506273" stroke-width="1.5">
+        <path d="M0 0L0 -68M0 0L64 -20M0 0L42 57M0 0L-49 46M0 0L-63 -21"/>
+      </g>
+      <g fill="#f8fafc">
+        <circle cx="0" cy="-68" r="3.5"/><circle cx="64" cy="-20" r="3.5"/>
+        <circle cx="42" cy="57" r="3.5"/><circle cx="-49" cy="46" r="3.5"/><circle cx="-63" cy="-21" r="3.5"/>
+      </g>
+    </g>
+    <text x="24" y="292" fill="#8293a3" class="sans small">positions · rotations · particle axes</text>
+  </g>
+
+  <g transform="translate(418 132)">
+    <rect width="340" height="318" rx="22" fill="#0f161e" stroke="#2b3947"/>
+    <text x="24" y="32" fill="#9fb0bf" class="sans eyebrow">02 · PACK INTO BATCHES</text>
+    <g transform="translate(34 72)">
+      <g fill="#64748b">
+        <circle cx="12" cy="22" r="6"/><circle cx="12" cy="58" r="6"/><circle cx="12" cy="94" r="6"/><circle cx="12" cy="130" r="6"/><circle cx="12" cy="166" r="6"/>
+      </g>
+      <g stroke="#334155" stroke-width="2">
+        <path d="M26 22H106"/><path d="M26 58H106"/><path d="M26 94H106"/><path d="M26 130H106"/><path d="M26 166H106"/>
+      </g>
+      <g fill="#38bdf8">
+        <circle r="5"><animateMotion dur="3.4s" repeatCount="indefinite" path="M26 22H106"/></circle>
+        <circle r="5"><animateMotion dur="3.4s" begin=".45s" repeatCount="indefinite" path="M26 58H106"/></circle>
+        <circle r="5"><animateMotion dur="3.4s" begin=".9s" repeatCount="indefinite" path="M26 94H106"/></circle>
+        <circle r="5"><animateMotion dur="3.4s" begin="1.35s" repeatCount="indefinite" path="M26 130H106"/></circle>
+        <circle r="5"><animateMotion dur="3.4s" begin="1.8s" repeatCount="indefinite" path="M26 166H106"/></circle>
+      </g>
+      <g transform="translate(126 8)">
+        <rect width="150" height="190" rx="16" fill="#121c25" stroke="#3b5368"/>
+        <g fill="#20303e">
+          <rect x="18" y="22" width="24" height="24" rx="5"/><rect x="50" y="22" width="24" height="24" rx="5"/><rect x="82" y="22" width="24" height="24" rx="5"/><rect x="114" y="22" width="18" height="24" rx="5"/>
+          <rect x="18" y="54" width="24" height="24" rx="5"/><rect x="50" y="54" width="24" height="24" rx="5"/><rect x="82" y="54" width="24" height="24" rx="5"/><rect x="114" y="54" width="18" height="24" rx="5"/>
+          <rect x="18" y="86" width="24" height="24" rx="5"/><rect x="50" y="86" width="24" height="24" rx="5"/><rect x="82" y="86" width="24" height="24" rx="5"/><rect x="114" y="86" width="18" height="24" rx="5"/>
+          <rect x="18" y="118" width="24" height="24" rx="5"/><rect x="50" y="118" width="24" height="24" rx="5"/><rect x="82" y="118" width="24" height="24" rx="5"/><rect x="114" y="118" width="18" height="24" rx="5"/>
+        </g>
+        <g fill="#38bdf8">
+          <rect x="18" y="22" width="24" height="24" rx="5"><animate attributeName="opacity" values=".25;1;.25" dur="2.8s" repeatCount="indefinite"/></rect>
+          <rect x="50" y="54" width="24" height="24" rx="5"><animate attributeName="opacity" values=".25;1;.25" dur="2.8s" begin=".4s" repeatCount="indefinite"/></rect>
+          <rect x="82" y="86" width="24" height="24" rx="5"><animate attributeName="opacity" values=".25;1;.25" dur="2.8s" begin=".8s" repeatCount="indefinite"/></rect>
+          <rect x="114" y="118" width="18" height="24" rx="5"><animate attributeName="opacity" values=".25;1;.25" dur="2.8s" begin="1.2s" repeatCount="indefinite"/></rect>
+        </g>
+        <text x="18" y="172" fill="#9fb0bf" class="sans small">species-pair tensor</text>
+      </g>
+    </g>
+    <text x="24" y="292" fill="#8293a3" class="sans small">torch.linalg.solve · einsum · scatter_add</text>
+  </g>
+
+  <g transform="translate(796 132)">
+    <rect width="364" height="318" rx="22" fill="#0f161e" stroke="#2b3947"/>
+    <text x="24" y="32" fill="#9fb0bf" class="sans eyebrow">03 · DESCRIPTOR FINGERPRINT</text>
+    <g transform="translate(34 66)">
+      <path d="M0 105H68" fill="none" stroke="#425466" stroke-width="2" stroke-dasharray="5 7"/>
+      <g fill="#fbbf24">
+        <circle r="5"><animateMotion dur="2.8s" repeatCount="indefinite" path="M0 105H68"/></circle>
+        <circle r="4"><animateMotion dur="2.8s" begin="1.4s" repeatCount="indefinite" path="M0 105H68"/></circle>
+      </g>
+      <g transform="translate(86 4)">
+        <rect width="224" height="202" rx="18" fill="#121c25" stroke="#3b5368"/>
+        <g transform="translate(20 22)">
+          <g fill="#243443">
+            <rect x="0" y="0" width="26" height="26" rx="5"/><rect x="34" y="0" width="26" height="26" rx="5"/><rect x="68" y="0" width="26" height="26" rx="5"/><rect x="102" y="0" width="26" height="26" rx="5"/><rect x="136" y="0" width="26" height="26" rx="5"/><rect x="170" y="0" width="14" height="26" rx="5"/>
+            <rect x="0" y="34" width="26" height="26" rx="5"/><rect x="34" y="34" width="26" height="26" rx="5"/><rect x="68" y="34" width="26" height="26" rx="5"/><rect x="102" y="34" width="26" height="26" rx="5"/><rect x="136" y="34" width="26" height="26" rx="5"/><rect x="170" y="34" width="14" height="26" rx="5"/>
+            <rect x="0" y="68" width="26" height="26" rx="5"/><rect x="34" y="68" width="26" height="26" rx="5"/><rect x="68" y="68" width="26" height="26" rx="5"/><rect x="102" y="68" width="26" height="26" rx="5"/><rect x="136" y="68" width="26" height="26" rx="5"/><rect x="170" y="68" width="14" height="26" rx="5"/>
+            <rect x="0" y="102" width="26" height="26" rx="5"/><rect x="34" y="102" width="26" height="26" rx="5"/><rect x="68" y="102" width="26" height="26" rx="5"/><rect x="102" y="102" width="26" height="26" rx="5"/><rect x="136" y="102" width="26" height="26" rx="5"/><rect x="170" y="102" width="14" height="26" rx="5"/>
+          </g>
+          <g>
+            <rect x="0" y="68" width="26" height="26" rx="5" fill="#38bdf8"><animate attributeName="opacity" values=".3;1;.3" dur="3s" repeatCount="indefinite"/></rect>
+            <rect x="34" y="34" width="26" height="26" rx="5" fill="#a78bfa"><animate attributeName="opacity" values=".3;1;.3" dur="3s" begin=".35s" repeatCount="indefinite"/></rect>
+            <rect x="68" y="102" width="26" height="26" rx="5" fill="#fb7185"><animate attributeName="opacity" values=".3;1;.3" dur="3s" begin=".7s" repeatCount="indefinite"/></rect>
+            <rect x="102" y="0" width="26" height="26" rx="5" fill="#fbbf24"><animate attributeName="opacity" values=".3;1;.3" dur="3s" begin="1.05s" repeatCount="indefinite"/></rect>
+            <rect x="136" y="68" width="26" height="26" rx="5" fill="#38bdf8"><animate attributeName="opacity" values=".3;1;.3" dur="3s" begin="1.4s" repeatCount="indefinite"/></rect>
+          </g>
+          <path d="M0 150C24 132 42 166 66 145S111 130 138 151S168 160 184 143" fill="none" stroke="#7dd3fc" stroke-width="2" opacity=".65"/>
+        </g>
+      </g>
+    </g>
+    <text x="24" y="292" fill="#8293a3" class="sans small">Rust moments → metatensor blocks</text>
+  </g>
+
+  <g transform="translate(58 478)">
+    <rect width="1084" height="1" fill="#25313d"/>
+    <text x="0" y="24" fill="#718096" class="sans small">Pinned upstream revision</text>
+    <circle cx="178" cy="20" r="2.5" fill="#38bdf8"/>
+    <text x="194" y="24" fill="#718096" class="sans small">numerical parity tests</text>
+    <circle cx="352" cy="20" r="2.5" fill="#fbbf24"/>
+    <text x="368" y="24" fill="#718096" class="sans small">reproducible bootstrap</text>
+    <text x="882" y="24" fill="#9fb0bf" class="sans small">PyTorch · Rust · PyO3 · metatensor</text>
+  </g>
+</svg>

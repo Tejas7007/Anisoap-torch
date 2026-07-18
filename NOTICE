@@ -1,0 +1,31 @@
+AniSOAP-Torch
+Copyright 2026 Tejas Dahiya
+
+This repository contains modified portions of AniSOAP:
+https://github.com/cersonsky-lab/AniSOAP
+
+AniSOAP is distributed under the Apache License, Version 2.0. The original
+software authors and citation metadata are available in the upstream repository.
+
+Files derived from and modified relative to upstream AniSOAP:
+
+- anisoap/representations/radial_basis.py
+  Added PyTorch linear algebra, batched Gaussian-parameter evaluation, and
+  device propagation.
+
+- anisoap/representations/ellipsoidal_density_projection.py
+  Added batched pair extraction, batched Rust moment evaluation, PyTorch tensor
+  contractions, and scatter-based feature aggregation.
+
+- rust/ellip_expansion/compute_moments.rs
+  Added batched moment evaluation across neighbor pairs.
+
+- rust/lib.rs
+  Added the PyO3 batch binding and GIL release around batched Rust work.
+
+- Cargo.toml
+  Added Rayon and repository-specific package metadata.
+
+The optimization code is distributed under the same Apache-2.0 license. This
+notice does not imply endorsement by the AniSOAP authors, the Cersonsky Lab, or
+the University of Wisconsin-Madison.
